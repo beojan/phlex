@@ -19,8 +19,7 @@ namespace phlex::experimental {
   public:
     explicit product_store(data_cell_index_ptr id,
                            algorithm_name source = default_source(),
-                           products new_products = {},
-                           stage processing_stage = stage::process);
+                           products new_products = {});
     ~product_store();
     static product_store_ptr base(algorithm_name base_name = default_source());
 
@@ -31,7 +30,6 @@ namespace phlex::experimental {
 
     identifier const& layer_name() const noexcept;
     algorithm_name const& source() const noexcept;
-    product_store_ptr make_flush() const;
     data_cell_index_ptr const& index() const noexcept;
 
     // Product interface
@@ -58,7 +56,6 @@ namespace phlex::experimental {
     data_cell_index_ptr id_;
     algorithm_name
       source_; // FIXME: Should not have to copy (the source should outlive the product store)
-    stage stage_;
   };
 
   product_store_ptr const& more_derived(product_store_ptr const& a, product_store_ptr const& b);

@@ -8,12 +8,10 @@ namespace phlex::experimental {
 
   product_store::product_store(data_cell_index_ptr id,
                                algorithm_name source,
-                               products new_products,
-                               stage processing_stage) :
+                               products new_products) :
     products_{std::move(new_products)},
     id_{std::move(id)},
-    source_{std::move(source)},
-    stage_{processing_stage}
+    source_{std::move(source)}
   {
   }
 
@@ -22,12 +20,6 @@ namespace phlex::experimental {
   product_store_ptr product_store::base(algorithm_name base_name)
   {
     return product_store_ptr{new product_store{data_cell_index::base_ptr(), std::move(base_name)}};
-  }
-
-  product_store_ptr product_store::make_flush() const
-  {
-    static algorithm_name const inserted = algorithm_name::create("[inserted]");
-    return product_store_ptr{new product_store{id_, inserted, {}, stage::flush}};
   }
 
   identifier const& product_store::layer_name() const noexcept { return id_->layer_name(); }
@@ -49,7 +41,7 @@ namespace phlex::experimental {
 
   algorithm_name product_store::default_source() {
     using namespace literals;
-    static algorithm_name const def = algorithm_name::create("[Source]");
+    static algorithm_name const def = algorithm_name::create("Source");
     return def;
   }
 }

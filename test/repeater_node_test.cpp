@@ -20,7 +20,7 @@ using namespace phlex::experimental;
 namespace {
   auto make_run_index(int run_number)
   {
-    return phlex::data_cell_index::base_ptr()->make_child(run_number, "run");
+    return phlex::data_cell_index::base_ptr()->make_child(run_number, "run"_id);
   }
 
   auto make_run_with_product(int run_number, int value)

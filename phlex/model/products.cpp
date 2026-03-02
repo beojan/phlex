@@ -7,7 +7,7 @@
 namespace phlex::experimental {
   bool products::contains(product_specification const& spec) const
   {
-    return products_.contains(spec);
+    return products_.contains({spec.type(), spec.name()});
   }
 
   products::const_iterator products::begin() const noexcept { return products_.begin(); }

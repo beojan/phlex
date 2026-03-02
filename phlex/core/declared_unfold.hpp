@@ -35,8 +35,8 @@ namespace phlex::experimental {
   class generator {
   public:
     explicit generator(product_store_const_ptr const& parent,
-                       std::string node_name,
-                       std::string const& child_layer_name);
+                       algorithm_name node_name,
+                       identifier const& child_layer_name);
     flush_counts_ptr flush_result() const;
 
     product_store_const_ptr make_child_for(std::size_t const data_cell_number,
@@ -68,10 +68,10 @@ namespace phlex::experimental {
     virtual std::size_t product_count() const = 0;
     virtual flusher_t& flusher() = 0;
 
-    std::string const& child_layer() const noexcept { return child_layer_; }
+    identifier const& child_layer() const noexcept { return child_layer_; }
 
   private:
-    std::string child_layer_;
+    identifier child_layer_;
   };
 
   using declared_unfold_ptr = std::unique_ptr<declared_unfold>;

@@ -3,21 +3,20 @@
 
 #include "phlex/model/product_store.hpp"
 
-#include "fmt/std.h"
+#include "fmt/ranges.h"
 #include "spdlog/spdlog.h"
 
-#include <sstream>
+#include <ranges>
 
 namespace phlex::experimental::test {
   struct products_for_output {
     void save(product_store const& store) const
     {
-      std::ostringstream oss;
-      oss << "Saving data for store id: " << store.index() << " from source: " << store.source().full();
-      for (auto const& [spec, _] : store) {
-        oss << "\n -> Product spec: " << spec.full();
-      }
-      spdlog::debug(oss.str());
+      namespace views = std::ranges::views;
+      spdlog::debug("Saving data for store id: {} from source: {} \n -> {}",
+                    store.index()->to_string(),
+                    store.source().full(),
+                    fmt::join(store | views::keys | views::elements<1>, "\n -> "));
     }
   };
 

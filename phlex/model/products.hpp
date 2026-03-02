@@ -4,10 +4,12 @@
 #include "phlex/model/product_specification.hpp"
 
 #include <cassert>
+#include <map>
 #include <memory>
+#include <ranges>
 #include <string>
+#include <tuple>
 #include <typeinfo>
-#include <unordered_map>
 #include <utility>
 
 namespace phlex::experimental {
@@ -33,7 +35,9 @@ namespace phlex::experimental {
   };
 
   class products {
-    using collection_t = std::unordered_map<product_specification, std::unique_ptr<product_base>>;
+    using product_ptr = std::unique_ptr<product_base>;
+    using product_id = std::tuple<type_id, identifier>;
+    using collection_t = std::map<product_id, product_ptr>;
 
   public:
     using const_iterator = collection_t::const_iterator;
@@ -42,14 +46,14 @@ namespace phlex::experimental {
     template <typename T>
     void add(product_specification const& spec, T t)
     {
-      products_.emplace(spec,
+      products_.emplace(spec_to_id<T>(spec),
                         std::make_unique<product<std::remove_cvref_t<T>>>(std::move(t)));
     }
 
     template <typename T>
     void add(product_specification const& spec, std::unique_ptr<product<T>> t)
     {
-      products_.emplace(spec, std::move(t));
+      products_.emplace(spec_to_id<T>(spec), std::move(t));
     }
 
     template <typename Ts>
@@ -71,9 +75,13 @@ namespace phlex::experimental {
     template <typename T>
     T const& get(product_specification const& spec) const
     {
-      auto it = products_.find(spec);
+      product_id const prod = spec_to_id<T>(spec);
+      auto it = products_.find(prod);
       if (it == cend(products_)) {
-        throw std::runtime_error(fmt::format("No product exists with the name '{}'.", spec.full()));
+        throw std::runtime_error(
+          fmt::format("No product exists with the name '{}' and type '{}'.",
+                      std::get<1>(prod),
+                      std::get<0>(prod)));
       }
 
       auto const* available_product = it->second.get();
@@ -96,6 +104,10 @@ namespace phlex::experimental {
                                                     char const* requested_type,
                                                     char const* available_type);
 
+    template <typename T>
+    static product_id spec_to_id(product_specification const& spec) {
+      return product_id{spec.type().valid() ? spec.type() : make_type_id<T>(), spec.name()};
+    }
     collection_t products_;
   };
 }

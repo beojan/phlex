@@ -25,7 +25,7 @@ namespace {
     void record(experimental::product_store const& store)
     {
       for (auto const& spec : store | std::views::keys) {
-        products_->insert(spec.full());
+        products_->insert(fmt::to_string(std::get<1>(spec)));
       }
     }
 
@@ -65,5 +65,5 @@ TEST_CASE("Output data products", "[graph]")
   // store from the "provide_number" provider, and once to receive the data store from the
   // "square_number" transform.
   CHECK(g.execution_count("record_numbers") == 2u);
-  CHECK(products_from_nodes == std::set<std::string>{"input:input/number_from_provider", "square_number:square_number/squared_number"});
+  CHECK(products_from_nodes == std::set<std::string>{"number_from_provider", "squared_number"});
 }

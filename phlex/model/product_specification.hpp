@@ -30,16 +30,19 @@ namespace phlex::experimental {
     void set_type(type_id&& type) { type_id_ = std::move(type); }
 
     auto operator<=>(product_specification const&) const = default;
-
+    bool operator==(product_specification const& rhs) const;
     static product_specification create(char const* c);
     static product_specification create(std::string_view s);
 
     friend struct std::hash<product_specification>;
+
   private:
     algorithm_name qualifier_;
     identifier name_;
     type_id type_id_{};
   };
+
+  std::string format_as(product_specification const& spec);
 
   using product_specifications = std::vector<product_specification>;
 
@@ -50,12 +53,15 @@ namespace phlex::experimental {
 
 template <>
 struct std::hash<phlex::experimental::product_specification> {
-  std::size_t operator()(phlex::experimental::product_specification const& spec) const noexcept {
+  std::size_t operator()(phlex::experimental::product_specification const& spec) const noexcept
+  {
     std::size_t hash = spec.qualifier_.plugin().hash();
     boost::hash_combine(hash, spec.qualifier_.algorithm().hash());
     boost::hash_combine(hash, spec.name_.hash());
-    boost::hash_combine(hash, spec.type_id_);
-    return hash;    
+    if (spec.type_id_.valid()) {
+      boost::hash_combine(hash, spec.type_id_);
+    }
+    return hash;
   }
 };
 #endif // PHLEX_MODEL_PRODUCT_SPECIFICATION_HPP
