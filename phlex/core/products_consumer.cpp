@@ -27,7 +27,7 @@ namespace {
       if (query.layer) {
         result.push_back(query.layer);
       } else {
-        result.push_back("*"_id);
+        result.push_back("_Any"_id);
       }
     }
     return result;

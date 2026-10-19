@@ -167,7 +167,7 @@ namespace phlex::detail {
     if (b == e) {
       spdlog::debug(
         "Failed to find an algorithm that creates {} products. Assuming it comes from a provider",
-        query.suffix.value_or("*"_id));
+        query.suffix.value_or("EMPTY"_id));
       return {};
     }
     std::vector<named_output_port const*> candidates;

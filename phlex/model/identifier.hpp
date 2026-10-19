@@ -15,9 +15,15 @@
 #include <string_view>
 
 namespace phlex::experimental {
+  class identifier;
+
+  /// Exception thrown if an identifier fails validation
+  struct invalid_identifier_error : public std::runtime_error {
+    using std::runtime_error::runtime_error;
+  };
+
   /// If you're comparing to an identifier you know at compile time, you're probably not going to need
   /// to print it.
-  class identifier;
   struct PHLEX_MODEL_EXPORT identifier_query {
     std::uint64_t hash;
     // This means an identifier_query can be used as a callable to check if it compares equal to an identifier

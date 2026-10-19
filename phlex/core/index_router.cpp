@@ -208,8 +208,9 @@ namespace phlex::detail {
                                               provider_input_ports_t provider_input_ports)
   {
     for (auto& [input_product, provider_port] : provider_input_ports | std::views::values) {
-      auto [it, _] = index_set_nodes_.emplace(input_product.layer ? *input_product.layer : "*"_id,
-                                              std::make_shared<internal::index_set_node>(g));
+      auto [it, _] =
+        index_set_nodes_.emplace(input_product.layer ? *input_product.layer : "_Any"_id,
+                                 std::make_shared<internal::index_set_node>(g));
       make_edge(*it->second, *provider_port);
     }
   }

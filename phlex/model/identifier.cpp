@@ -6,9 +6,58 @@
 #include <utility>
 
 namespace phlex::experimental {
-  identifier::identifier(std::string_view str) : content_(str), hash_(hash_string(content_)) {}
+  namespace {
+    void validate_identifier(std::string_view str)
+    {
+// No empty identifiers
+#define PHLEX_ALLOW_EMPTY_IDENTIFIER 1
+#ifndef PHLEX_ALLOW_EMPTY_IDENTIFIER
+      if (str.empty()) {
+        throw invalid_identifier_error(
+          "Invalid Identifier: The empty string is not a valid identifier!");
+      }
+#endif
+      constexpr auto char_class = [](char c) {
+        if ('0' <= c && '9' >= c) {
+          return 'd';
+        }
+
+        if ('A' <= c && 'Z' >= c) {
+          return 'L'; // capital Letter
+        }
+
+        if ('a' <= c && 'z' >= c) {
+          return 'l'; // lower case letter
+        }
+
+        if (c == '_') {
+          return '_';
+        }
+
+        return 'X';
+      };
+
+      if (char_class(str[0]) == 'd') {
+        throw invalid_identifier_error(
+          fmt::format("Invalid Identifier '{}': Starts with a digit!", str));
+      }
+
+      for (char c : str) {
+        if (char_class(c) == 'X') {
+          throw invalid_identifier_error(
+            fmt::format("Invalid Identifier '{}': Contains invalid character '{}'!", str, c));
+        }
+      }
+    }
+  }
+
+  identifier::identifier(std::string_view str) : content_(str), hash_(hash_string(content_))
+  {
+    validate_identifier(str);
+  }
   identifier::identifier(std::string&& str) : content_(std::move(str)), hash_(hash_string(content_))
   {
+    validate_identifier(str);
   }
 
   identifier::operator std::string_view() const noexcept { return std::string_view(content_); }
